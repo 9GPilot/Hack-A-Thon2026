@@ -28,7 +28,7 @@ def initialize_gamestate(userInitParagraph: str):
 
 
     #create the gamestate object and add stages
-    game = Game
+    game = Game()
     game.add_stage("prompt_1_image.png", locations[0], enemies[0])
     game.add_stage("prompt_2_image.png", locations[1], enemies[1])
     game.add_stage("prompt_3_image.png", locations[2], enemies[2])

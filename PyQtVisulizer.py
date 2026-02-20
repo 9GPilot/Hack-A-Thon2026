@@ -3,6 +3,7 @@ from PyQt5.QtCore import QSize, QTimer
 from PyQt5.QtGui import QPixmap
 import os
 import gemini_functions
+import controller
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -28,7 +29,7 @@ class MainWindow(QMainWindow):
         layout = QVBoxLayout()
         layout.addWidget(QLabel("We would like you to describe yourself. Do so below"))
         layout.addWidget(self.promptInput)
-        layout.addWidget(submitBtn)
+        layout.addWidget(self.submitBtn)
 
         container = QWidget()
         container.setLayout(layout)
@@ -47,17 +48,17 @@ class MainWindow(QMainWindow):
         self.imageLabel.setPixmap(pixmap)
         self.resize(pixmap.width(), pixmap.height())
 
-        self.challegePromptLable = QLabel(currentStage.get_prompt())
+        self.challegePromptLabel = QLabel(currentStage.get_prompt())
         self.enterInputBelowLabel = QLabel("Enter your response to the challenge below:")
         self.input = QLineEdit()
         self.input.setPlaceholderText("How would you solve this challange...")
-        self.geminiResponse = QLable()
+        self.geminiResponse = QLabel()
 
         self.input.returnPressed.connect(self.validateUserSolution)
 
         layout = QVBoxLayout()
         layout.addWidget(self.imageLabel)
-        layout.addWidget(self.challegePromptLable)
+        layout.addWidget(self.challegePromptLabel)
         layout.addWidget(self.enterInputBelowLabel)
         layout.addWidget(self.input)
 
@@ -72,16 +73,21 @@ class MainWindow(QMainWindow):
         After the current stage has a enter pressed on the input, that means
         a solution was passed in, validate this solution or not 
         """
+        
         # get the user solution
         userSolution = self.input.text()
+        print(f"Attempting solution ({userSolution})")
         currentChalenge = self._currentStage.get_prompt()
         result: bool = gemini_functions.is_reasonable_solution_GEMINI_API("Spider","Building",userSolution)
+        print(f"Attempting Solution ({userSolution}) Result={result}")
         if result == False:
-            self.geminiResponse("Your response is not good enough.. Try again")
+            self.geminiResponse.setText("Your response is not good enough.. Try again")
+            print("Attempting Solution: False result")
         else:
-            self.geminiResponse("NICE JOB! SUCCESS")
+            self.geminiResponse.setText("NICE JOB! SUCCESS")
             self._currentStage = self._myMainGameObject.get_stage()
-            QTimer.singleShot(2000, self.show_stage_screen)
+            print("Attempting Solution: True!! result, delaying for 1 seconds")
+            QTimer.singleShot(1000, self.show_stage_screen)
 
 
 
@@ -91,13 +97,13 @@ class MainWindow(QMainWindow):
         Only happens once, after the user enters their paragraph,
         if the MainGameObject has atleast 1 stage ready then GO GO GO 
         """
-        if self._myMainGameObject not None and self._myMainGameObject.atLeastOneStage():
+        if (self._myMainGameObject != None) and self._myMainGameObject.atLeastOneStage():
             self._currentStage = self._myMainGameObject.get_stage()
             self.show_stage_screen()
         else:
             self.submitBtn.setText("Please wait... generating... ")
             inputParagraph: str = self.promptInput.text()
-            self._myMainGameObject = controler.initialize_gamestate(inputParagraph)
+            self._myMainGameObject = controller.initialize_gamestate(inputParagraph)
             return False
 
 def main(mainGameObject):
