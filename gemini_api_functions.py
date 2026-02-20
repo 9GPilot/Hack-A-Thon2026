@@ -115,11 +115,12 @@ def generate_save_image_GEMINI_API(inputString:str, file_name:str):
 
 
 
-prompt_2 = BattlePromptStringGenerate("dungeon", "goblin").get_prompt_string()
-
-paragraph_input = ""
 
 #TESTS
-#generate_save_image(prompt_2, "prompt2")
-enemies, locations = generate_enemies_locations_GEMINI_API("I work at an office and am afraid of animals!")
-is_reasonable_solution_GEMINI_API(enemies[0], locations[0], "I will use bug spray!")
+
+#enemies, locations = generate_enemies_locations_GEMINI_API("I work at an office and am afraid of animals!")
+
+#image_prompt = BattlePromptStringGenerate(locations[0], enemies[0]).get_prompt_string()
+#generate_save_image(image_prompt, "prompt_1_image")
+
+#is_reasonable_solution_GEMINI_API(enemies[0], locations[0], "I will use bug spray!")
