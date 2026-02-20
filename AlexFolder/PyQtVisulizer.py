@@ -63,10 +63,13 @@ class MainWindow(QMainWindow):
         Only happens once, after the user enters their paragraph,
         if the MainGameObject has atleast 1 stage ready then GO GO GO 
         """
-        if self._myMainGameObject.atLeastOneStage():
+        if self._myMainGameObject not None and self._myMainGameObject.atLeastOneStage():
             # good to go,show the stage 
         else:
-            print("START ERROR: MainGame Object doesnt have atleast 1 stage ready, returning false")
+            self.submitBtn.setText("Please wait... generating... ")
+            # GET THE TEXT INPUT 
+            inputParagraph: str = self.promptInput.text()
+            # TODO CALL JAKES FUNCTION HERE TO START GENERATING THE MAIN
             return False
 
 def main(mainGameObject):
