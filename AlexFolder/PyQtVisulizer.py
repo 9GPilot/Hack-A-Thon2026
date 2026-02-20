@@ -1,15 +1,17 @@
 from PyQt5.QtWidgets import QMainWindow, QApplication, QWidget, QLabel, QPushButton, QVBoxLayout, QSlider, QLineEdit
-from PyQt5.QtCore import QSize
+from PyQt5.QtCore import QSize, QTimer
 from PyQt5.QtGui import QPixmap
 import os
+import gemini_functions
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
 class MainWindow(QMainWindow):
-    def __init__(self, MainGameObject):
+    def __init__(self):
         super().__init__()
 
-        self._myMainGameObject = MainGameObject
+        self._myMainGameObject = None
+        self._currentStage = None
 
         self.setWindowTitle("Story Game!")
         #self.setFixedSize(QSize(800,1000))
@@ -36,16 +38,22 @@ class MainWindow(QMainWindow):
         """
         Shows the screen displaying the setting image and the challange prompt
         """
+        currentStage = self._currentStage
+
         self.imageLabel = QLabel()
-        pixmap = QPixmap(os.path.join(BASE_DIR,"startingImg.png"))
+        imageLoc = currentStage.get_location() # pulls from the stage object given
+        pixmap = QPixmap(os.path.join(BASE_DIR,imageLoc))
         pixmap = pixmap.scaled(500,500)
         self.imageLabel.setPixmap(pixmap)
         self.resize(pixmap.width(), pixmap.height())
 
-        self.challegePromptLable = QLabel("Challenge Prompt Here")
+        self.challegePromptLable = QLabel(currentStage.get_prompt())
         self.enterInputBelowLabel = QLabel("Enter your response to the challenge below:")
         self.input = QLineEdit()
         self.input.setPlaceholderText("How would you solve this challange...")
+        self.geminiResponse = QLable()
+
+        self.input.returnPressed.connect(self.validateUserSolution)
 
         layout = QVBoxLayout()
         layout.addWidget(self.imageLabel)
@@ -58,18 +66,38 @@ class MainWindow(QMainWindow):
 
         self.setCentralWidget(container)
 
+
+    def validateUserSolution(self):
+        """
+        After the current stage has a enter pressed on the input, that means
+        a solution was passed in, validate this solution or not 
+        """
+        # get the user solution
+        userSolution = self.input.text()
+        currentChalenge = self._currentStage.get_prompt()
+        result: bool = gemini_functions.is_reasonable_solution_GEMINI_API("Spider","Building",userSolution)
+        if result == False:
+            self.geminiResponse("Your response is not good enough.. Try again")
+        else:
+            self.geminiResponse("NICE JOB! SUCCESS")
+            self._currentStage = self._myMainGameObject.get_stage()
+            QTimer.singleShot(2000, self.show_stage_screen)
+
+
+
+
     def start_game(self):
         """
         Only happens once, after the user enters their paragraph,
         if the MainGameObject has atleast 1 stage ready then GO GO GO 
         """
         if self._myMainGameObject not None and self._myMainGameObject.atLeastOneStage():
-            # good to go,show the stage 
+            self._currentStage = self._myMainGameObject.get_stage()
+            self.show_stage_screen()
         else:
             self.submitBtn.setText("Please wait... generating... ")
-            # GET THE TEXT INPUT 
             inputParagraph: str = self.promptInput.text()
-            # TODO CALL JAKES FUNCTION HERE TO START GENERATING THE MAIN
+            self._myMainGameObject = controler.initialize_gamestate(inputParagraph)
             return False
 
 def main(mainGameObject):
