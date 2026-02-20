@@ -1,16 +1,23 @@
 from stage import Stage
 
-class MainGame:
+
+
+
+
+
+
+class Game:
     def __init__(self):
         self.stages = []
         self.stageCount = 0
         self.current_stage = 0
+
     
-    def add_stage(self, stageNum, location, prompt):
+    def add_stage(self, image_file_location:str, location:str, enemy:str):
         stage = Stage()
-        stage.set_stageNum(stageNum)
-        stage.set_location(location)
-        stage.set_prompt(prompt)
+        stage.set_file_location(image_file_location)
+        stage.set_location(image_file_location)
+        stage.set_enemy(image_file_location)
 
         self.stages.append(stage)
         self.stageCount += 1
