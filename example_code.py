@@ -1,4 +1,5 @@
 from google import genai
+import dotenv
 
 # The client gets the API key from the environment variable `GEMINI_API_KEY`.
 client = genai.Client(api_key="AIzaSyDN7QTXtH418sG9DgI5QviihxifqmjFCEg")
