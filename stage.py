@@ -13,8 +13,14 @@ class Stage:
     def set_file_location(self, file_location):
         self.file_location = file_location
 
+    def get_file_location(self):
+        return self.file_location 
+
     def set_enemy(self, enemy):
         self.enemy = enemy
+
+    def get_enemy(self):
+        return self.enemy
 
     def get_location(self):
         return self.location
@@ -23,5 +29,5 @@ class Stage:
         self.prompt = prompt
 
     def get_prompt(self):
-        return self.prompt
+        return "You encounter " + self.enemy + " at " + self.location+ " ! What will you do? It must make sense."
     

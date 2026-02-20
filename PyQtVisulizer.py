@@ -41,8 +41,9 @@ class MainWindow(QMainWindow):
         """
         currentStage = self._currentStage
 
+
         self.imageLabel = QLabel()
-        imageLoc = currentStage.get_location() # pulls from the stage object given
+        imageLoc = currentStage.get_file_location() # pulls from the stage object given
         pixmap = QPixmap(os.path.join(BASE_DIR,imageLoc))
         pixmap = pixmap.scaled(500,500)
         self.imageLabel.setPixmap(pixmap)
@@ -61,6 +62,7 @@ class MainWindow(QMainWindow):
         layout.addWidget(self.challegePromptLabel)
         layout.addWidget(self.enterInputBelowLabel)
         layout.addWidget(self.input)
+        layout.addWidget(self.geminiResponse)
 
         container = QWidget()
         container.setLayout(layout)
@@ -78,7 +80,9 @@ class MainWindow(QMainWindow):
         userSolution = self.input.text()
         print(f"Attempting solution ({userSolution})")
         currentChalenge = self._currentStage.get_prompt()
-        result: bool = gemini_functions.is_reasonable_solution_GEMINI_API("Spider","Building",userSolution)
+        currentStageEnemy = self._currentStage.get_enemy()
+        currentStageLocation = self._currentStage.get_location()
+        result: bool = gemini_functions.is_reasonable_solution_GEMINI_API(currentStageEnemy,currentStageLocation,userSolution)
         print(f"Attempting Solution ({userSolution}) Result={result}")
         if result == False:
             self.geminiResponse.setText("Your response is not good enough.. Try again")
@@ -87,7 +91,7 @@ class MainWindow(QMainWindow):
             self.geminiResponse.setText("NICE JOB! SUCCESS")
             self._currentStage = self._myMainGameObject.get_stage()
             print("Attempting Solution: True!! result, delaying for 1 seconds")
-            QTimer.singleShot(1000, self.show_stage_screen)
+            QTimer.singleShot(2000, self.show_stage_screen)
 
 
 

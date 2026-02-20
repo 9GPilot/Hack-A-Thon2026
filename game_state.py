@@ -16,8 +16,8 @@ class Game:
     def add_stage(self, image_file_location:str, location:str, enemy:str):
         stage = Stage()
         stage.set_file_location(image_file_location)
-        stage.set_location(image_file_location)
-        stage.set_enemy(image_file_location)
+        stage.set_location(location)
+        stage.set_enemy(enemy)
 
         self.stages.append(stage)
         self.stageCount += 1
