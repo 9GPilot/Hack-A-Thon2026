@@ -4,6 +4,7 @@ from PyQt5.QtGui import QPixmap
 import os
 import gemini_functions
 import controller
+import sys
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -35,12 +36,17 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
         self.setCentralWidget(container)
     
+
     def show_stage_screen(self):
         """
         Shows the screen displaying the setting image and the challange prompt
         """
         currentStage = self._currentStage
 
+        # if current stage is false then there is no more stages, print CONDRATS
+        if currentStage == False:
+            self.show_ending_screen()
+            return
 
         self.imageLabel = QLabel()
         imageLoc = currentStage.get_file_location() # pulls from the stage object given
@@ -68,6 +74,20 @@ class MainWindow(QMainWindow):
         container.setLayout(layout)
 
         self.setCentralWidget(container)
+
+    def show_ending_screen(self):
+        self.congratsLable = QLabel("You beat all your fears! Congratulations!")
+        self.endingButton = QPushButton("Press here to close")
+        self.endingButton.clicked.connect(self.endGame)
+        layout = QVBoxLayout()
+        layout.addWidget(self.congratsLable)
+        layout.addWidget(self.endingButton)
+        container = QWidget()
+        container.setLayout(layout)
+        self.setCentralWidget(container)
+
+    def endGame(self):
+        sys.exit(0)
 
 
     def validateUserSolution(self):
